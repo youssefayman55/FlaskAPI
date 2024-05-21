@@ -3,8 +3,8 @@ import joblib
 import os
 import numpy as np
 
-base_dir = 'C:/Users/S_AFRICA/Machine learning/Collage Project/Deyployment'
-classifier_path = os.path.join(base_dir, 'classification_model.pkl')
+base_dir = 'C:/Users/S_AFRICA/Machine learning/Collage Project'
+classifier_path = os.path.join(base_dir, 'Machine_Learning_Model.pkl')
 
 try:
     model = joblib.load(classifier_path)
@@ -14,7 +14,7 @@ except FileNotFoundError as e:
 
 app = Flask(__name__)
 
-@app.route('/classify', methods=['POST'])
+@app.route('/', methods=['POST'])
 def receive_data():
     data = request.json
     response = classify(data)
@@ -32,12 +32,23 @@ def classify(data):
             # Create a feature array
             features = np.array([[hr, age]])
 
-            # Predict using the model
+             # Predict using the model
             classification = model.predict(features)
 
-            # Append the result
-            results.append({'Classification': classification.tolist()})
+            if classification == 0:
+                results.append({'Emotion': "Angry"})
 
+            elif classification == 1:
+                results.append({'Emotion': "Fear"})
+
+            elif classification == 2:
+                results.append({'Emotion': "Happy"})
+
+            elif classification == 3:
+                results.append({'Emotion': "Normal"})
+
+            else :
+                results.append({'Emotion': "Sad"})
 
         return results
 
@@ -46,3 +57,5 @@ def classify(data):
         return {'error': str(e)}, 400
     
 
+if __name__ =="__main__":
+    app.run(debug=True)
